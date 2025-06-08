@@ -1,43 +1,4 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -101,7 +62,7 @@
                     <p class="text-gray-600">Espacios ideales para vivir o rentar con acabados de alta calidad.</p>
                 </a>
                 <a href="oportunidades-inversion.html" class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition block">
-                    <img src="edificio_construccion.jpg" alt="Edificio en construcción" class="w-full h-48 object-cover rounded-lg mb-4">
+                    <img src="/edificio_construccion.jpg" alt="Edificio en construcción" class="w-full h-48 object-cover rounded-lg mb-4">
                     <h3 class="text-xl font-semibold text-blue-900">Oportunidades de Inversión</h3>
                     <p class="text-gray-600">Explora rent-to-own, rent-to-rent y house flipping para maximizar tu capital.</p>
                 </a>
@@ -115,7 +76,7 @@
             <h2 class="text-3xl md:text-4xl font-bold text-center text-blue-900 mb-10">Compra y Venta de Vehículos</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <a href="autos-usados.html" class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition block">
-                    <img src="mercedes_negro.jpg" alt="Mercedes negro" class="w-full h-48 object-cover rounded-lg mb-4">
+                    <img src="/mercedes_negro.jpg" alt="Mercedes negro" class="w-full h-48 object-cover rounded-lg mb-4">
                     <h3 class="text-xl font-semibold text-blue-900">Autos Usados</h3>
                     <p class="text-gray-600">Vehículos confiables a precios competitivos.</p>
                 </a>
@@ -125,7 +86,7 @@
                     <p class="text-gray-600">Modelos exclusivos para quienes buscan distinción.</p>
                 </a>
                 <a href="vehiculos-comerciales.html" class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition block">
-                    <img src="renault_blanca.jpg" alt="Renault blanca" class="w-full h-48 object-cover rounded-lg mb-4">
+                    <img src="/renault_blanca.jpg" alt="Renault blanca" class="w-full h-48 object-cover rounded-lg mb-4">
                     <h3 class="text-xl font-semibold text-blue-900">Vehículos Comerciales</h3>
                     <p class="text-gray-600">Furgonetas y camiones para potenciar tu negocio.</p>
                 </a>
@@ -165,8 +126,12 @@
                     <input type="email" id="email" name="email" class="w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500" required>
                 </div>
                 <div class="mb-4">
+                    <label for="telefono" class="block text-sm font-medium text-gray-700">Teléfono (Opcional)</label>
+                    <input type="tel" id="telefono" name="telefono" class="w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="mb-4">
                     <label for="intereses" class="block text-sm font-medium text-gray-700">Intereses</label>
-                    <select id="intereses" name="intereses" class="w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                    <select id="intereses" name="intereses" class="w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500" required>
                         <option value="inmuebles">Inmuebles</option>
                         <option value="vehiculos">Vehículos</option>
                         <option value="ambos">Ambos</option>
@@ -191,13 +156,35 @@
             const tipoUsuario = document.getElementById('tipo-usuario').value;
             const nombre = document.getElementById('nombre').value;
             const email = document.getElementById('email').value;
+            const telefono = document.getElementById('telefono').value || ''; // Opcional
             const intereses = document.getElementById('intereses').value;
             const mensaje = document.getElementById('mensaje');
-            
-            mensaje.classList.remove('hidden');
-            mensaje.textContent = `¡Gracias, ${nombre}! Te hemos registrado como ${tipoUsuario}. Pronto recibirás información sobre ${intereses}.`;
-            
-            this.reset();
+
+            // URL base de Google Forms con tu ID
+            const formId = 'e/1FAIpQLScpfj0_RUE4_4t3hwo5ygNysiWiA3CDhPBi4fktefSSo2V2HA';
+            const baseUrl = `https://docs.google.com/forms/d/${formId}/formResponse`;
+
+            // Parámetros de los campos con los IDs reales
+            const params = new URLSearchParams({
+                'entry.671367564': tipoUsuario,   // Tipo de usuario
+                'entry.1808450480': nombre,       // Nombre
+                'entry.1512764773': email,        // Correo electrónico
+                'entry.1013399342': telefono,     // Teléfono
+                'entry.1928524559': intereses     // Intereses
+            }).toString();
+
+            // Enviar los datos a Google Forms
+            fetch(`${baseUrl}?${params}`, {
+                method: 'POST',
+                mode: 'no-cors'
+            }).then(() => {
+                mensaje.classList.remove('hidden');
+                mensaje.textContent = `¡Gracias, ${nombre}! Tu registro ha sido enviado. Pronto recibirás información sobre ${intereses}.`;
+                this.reset();
+            }).catch(error => {
+                mensaje.classList.remove('hidden');
+                mensaje.textContent = `Hubo un error al enviar tu registro. Por favor, intenta de nuevo.`;
+            });
         });
     </script>
 </body>
