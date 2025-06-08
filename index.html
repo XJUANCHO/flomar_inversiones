@@ -1,0 +1,204 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flomar Inversiones</title>
+    <meta name="description" content="Flomar Inversiones: Oportunidades confiables en bienes raíces y vehículos. Rent-to-own, rent-to-rent, house flipping y más para compradores e inversionistas.">
+    <meta name="keywords" content="Flomar Inversiones, inversiones inmobiliarias, rent-to-own, rent-to-rent, house flipping, compra venta inmuebles, vehículos usados, inversionistas">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .smooth-scroll {
+            scroll-behavior: smooth;
+        }
+        .logo-font {
+            font-family: 'Dancing Script', cursive;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 smooth-scroll">
+    <!-- Header -->
+    <header class="bg-blue-900 text-white py-4 sticky top-0 z-10 shadow-lg">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-3xl font-bold tracking-tight logo-font">Flomar Inversiones</h1>
+            <nav>
+                <ul class="flex space-x-6">
+                    <li><a href="#home" class="hover:text-blue-200 transition">Inicio</a></li>
+                    <li><a href="#inmuebles" class="hover:text-blue-200 transition">Inmuebles</a></li>
+                    <li><a href="#vehiculos" class="hover:text-blue-200 transition">Vehículos</a></li>
+                    <li><a href="#sobre-nosotros" class="hover:text-blue-200 transition">Sobre Nosotros</a></li>
+                    <li><a href="#contacto" class="hover:text-blue-200 transition">Contacto</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="bg-cover bg-center h-96 flex items-center justify-center" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80')">
+        <div class="text-center text-white">
+            <h2 class="text-4xl md:text-5xl font-extrabold mb-4">Invierte con Confianza</h2>
+            <p class="text-lg md:text-xl mb-6">Oportunidades en bienes raíces y vehículos para compradores e inversionistas.</p>
+            <a href="#contacto" class="bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition">Regístrate Ahora</a>
+        </div>
+    </section>
+
+    <!-- Inmuebles Section -->
+    <section id="inmuebles" class="py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-blue-900 mb-10">Inversiones Inmobiliarias</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <a href="casas-modernas.html" class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition block">
+                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Casa" class="w-full h-48 object-cover rounded-lg mb-4">
+                    <h3 class="text-xl font-semibold text-blue-900">Casas Modernas</h3>
+                    <p class="text-gray-600">Propiedades con diseño innovador, perfectas para familias o compradores.</p>
+                </a>
+                <a href="apartamentos.html" class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition block">
+                    <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Apartamento" class="w-full h-48 object-cover rounded-lg mb-4">
+                    <h3 class="text-xl font-semibold text-blue-900">Apartamentos</h3>
+                    <p class="text-gray-600">Espacios ideales para vivir o rentar con acabados de alta calidad.</p>
+                </a>
+                <a href="oportunidades-inversion.html" class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition block">
+                    <img src="/edificio_construccion.jpg" alt="Edificio en construcción" class="w-full h-48 object-cover rounded-lg mb-4">
+                    <h3 class="text-xl font-semibold text-blue-900">Oportunidades de Inversión</h3>
+                    <p class="text-gray-600">Explora rent-to-own, rent-to-rent y house flipping para maximizar tu capital.</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vehículos Section -->
+    <section id="vehiculos" class="bg-gray-200 py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-blue-900 mb-10">Compra y Venta de Vehículos</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <a href="autos-usados.html" class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition block">
+                    <img src="/mercedes_negro.jpg" alt="Mercedes negro" class="w-full h-48 object-cover rounded-lg mb-4">
+                    <h3 class="text-xl font-semibold text-blue-900">Autos Usados</h3>
+                    <p class="text-gray-600">Vehículos confiables a precios competitivos.</p>
+                </a>
+                <a href="autos-lujo.html" class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition block">
+                    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="BMW" class="w-full h-48 object-cover rounded-lg mb-4">
+                    <h3 class="text-xl font-semibold text-blue-900">Autos de Lujo</h3>
+                    <p class="text-gray-600">Modelos exclusivos para quienes buscan distinción.</p>
+                </a>
+                <a href="vehiculos-comerciales.html" class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition block">
+                    <img src="/renault_blanca.jpg" alt="Renault blanca" class="w-full h-48 object-cover rounded-lg mb-4">
+                    <h3 class="text-xl font-semibold text-blue-900">Vehículos Comerciales</h3>
+                    <p class="text-gray-600">Furgonetas y camiones para potenciar tu negocio.</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sobre Nosotros Section -->
+    <section id="sobre-nosotros" class="py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-blue-900 mb-10">Sobre Flomar Inversiones</h2>
+            <div class="max-w-2xl mx-auto text-center">
+                <p class="text-gray-600 mb-4">En Flomar Inversiones, ofrecemos soluciones confiables para compradores e inversionistas en bienes raíces y vehículos. Desde opciones de compra directa hasta estrategias avanzadas como rent-to-own, rent-to-rent y house flipping, te ayudamos a maximizar tu inversión.</p>
+                <p class="text-gray-600">Nuestro compromiso es la transparencia, profesionalismo y un enfoque moderno para que tomes decisiones informadas.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contacto y Registro -->
+    <section id="contacto" class="bg-blue-50 py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-blue-900 mb-10">Regístrate para Oportunidades Exclusivas</h2>
+            <form id="registro-form" class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
+                <div class="mb-4">
+                    <label for="tipo-usuario" class="block text-sm font-medium text-gray-700">¿Eres Comprador o Inversionista?</label>
+                    <select id="tipo-usuario" name="tipo-usuario" class="w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500" required>
+                        <option value="comprador">Comprador/Interesado</option>
+                        <option value="inversionista">Inversionista</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
+                    <input type="text" id="nombre" name="nombre" class="w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500" required>
+                </div>
+                <div class="mb-4">
+                    <label for="email" class="block text-sm font-medium text-gray-700">Correo Electrónico</label>
+                    <input type="email" id="email" name="email" class="w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500" required>
+                </div>
+                <div class="mb-4">
+                    <label for="intereses" class="block text-sm font-medium text-gray-700">Intereses</label>
+                    <select id="intereses" name="intereses" class="w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        <option value="inmuebles">Inmuebles</option>
+                        <option value="vehiculos">Vehículos</option>
+                        <option value="ambos">Ambos</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition">Regístrate</button>
+            </form>
+            <p id="mensaje" class="text-center mt-4 hidden text-green-600"></p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-blue-900 text-white py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p>© 2025 Flomar Inversiones. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('registro-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const tipoUsuario = document.getElementById('tipo-usuario').value;
+            const nombre = document.getElementById('nombre').value;
+            const email = document.getElementById('email').value;
+            const intereses = document.getElementById('intereses').value;
+            const mensaje = document.getElementById('mensaje');
+            
+            mensaje.classList.remove('hidden');
+            mensaje.textContent = `¡Gracias, ${nombre}! Te hemos registrado como ${tipoUsuario}. Pronto recibirás información sobre ${intereses}.`;
+            
+            this.reset();
+        });
+    </script>
+</body>
+</html>
