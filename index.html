@@ -6,6 +6,7 @@
     <title>Flomar Inversiones</title>
     <meta name="description" content="Flomar Inversiones: Oportunidades confiables en bienes raíces y vehículos. Rent-to-own, rent-to-rent, house flipping y más para compradores e inversionistas.">
     <meta name="keywords" content="Flomar Inversiones, inversiones inmobiliarias, rent-to-own, rent-to-rent, house flipping, compra venta inmuebles, vehículos usados, inversionistas">
+    <!-- Using CDN for simplicity (not recommended for production. See https://tailwindcss.com/docs/installation for local setup) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <style>
@@ -173,6 +174,8 @@
                 'entry.1928524559': intereses     // Intereses
             }).toString();
 
+            console.log('Enviando datos:', params); // Depuración: verifica los datos en la consola del navegador
+
             // Enviar los datos a Google Forms
             fetch(`${baseUrl}?${params}`, {
                 method: 'POST',
@@ -183,7 +186,7 @@
                 this.reset();
             }).catch(error => {
                 mensaje.classList.remove('hidden');
-                mensaje.textContent = `Hubo un error al enviar tu registro. Por favor, intenta de nuevo.`;
+                mensaje.textContent = `Hubo un error al enviar tu registro. Por favor, intenta de nuevo. Detalle: ${error.message}`;
             });
         });
     </script>
